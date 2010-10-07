@@ -7,6 +7,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -31,6 +33,31 @@ public class RaceLog extends Activity implements SensorEventListener {
 			SensorManager.SENSOR_DELAY_FASTEST);
 
 		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, Float.MIN_VALUE,
+			new LocationListener() {
+				@Override
+				public void onLocationChanged(final Location location) {
+					((TextView) findViewById(R.id.lat)).setText("lat:"
+						+ Double.toString(location.getLatitude()));
+					((TextView) findViewById(R.id.lon)).setText("lon:"
+						+ Double.toString(location.getLongitude()));
+					((TextView) findViewById(R.id.alt)).setText("alt:"
+						+ Double.toString(location.getAltitude()));
+				}
+
+				@Override
+				public void onProviderDisabled(final String provider) {
+				}
+
+				@Override
+				public void onProviderEnabled(final String provider) {
+				}
+
+				@Override
+				public void onStatusChanged(final String provider, final int status,
+					final Bundle extras) {
+				}
+			});
 	}
 
 	@Override
@@ -56,4 +83,5 @@ public class RaceLog extends Activity implements SensorEventListener {
 			((TextView) findViewById(R.id.magZ)).setText("mag Z:" + event.values[2]);
 		}
 	}
+
 }

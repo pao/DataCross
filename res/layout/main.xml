@@ -14,4 +14,8 @@
 <TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/magX"></TextView>
 <TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/magY"></TextView>
 <TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/magZ"></TextView>
+<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/nmea"></TextView>
+<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/lat"></TextView>
+<TextView android:text="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/lon"></TextView>
+<TextView android:text="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/alt"></TextView>
 </LinearLayout>
