@@ -72,6 +72,11 @@ public class RaceLog extends Activity implements SensorEventListener, LocationLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		sm = (SensorManager) getSystemService(SENSOR_SERVICE);
+		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+		propagateState();
+	}
+
+	private void propagateState() {
 		sm.registerListener(this, sm.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0),
 			SensorManager.SENSOR_DELAY_FASTEST);
 		List<Sensor> gyros;
@@ -81,11 +86,13 @@ public class RaceLog extends Activity implements SensorEventListener, LocationLi
 		sm.registerListener(this, sm.getSensorList(Sensor.TYPE_MAGNETIC_FIELD).get(0),
 			SensorManager.SENSOR_DELAY_FASTEST);
 
-		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, Float.MIN_VALUE, this);
 
 		h.removeCallbacks(periodicStateUpdate);
-		h.post(periodicStateUpdate);
+	}
+
+	private void calibrateGpNormalVector() {
+
 	}
 
 	private double dot(final float[] u, final float[] v) {
@@ -138,7 +145,7 @@ public class RaceLog extends Activity implements SensorEventListener, LocationLi
 		gpY_sen3 = normalize(gpY_sen3);
 	}
 
-	private float[] projectOnGroundPlane(final float[] v) {
+	private float[] projectFromSen3ToSen(final float[] v) {
 		final float[] w = { Float.NaN, Float.NaN };
 		w[0] = (float) dot(v, gpX_sen3);
 		w[1] = (float) dot(v, gpY_sen3);
@@ -231,14 +238,14 @@ public class RaceLog extends Activity implements SensorEventListener, LocationLi
 		// Dispatch the field update
 		switch (event.sensor.getType()) {
 		case Sensor.TYPE_ACCELEROMETER:
-			accel_sen_loc_veh = rotate2(projectOnGroundPlane(event.values), psi_sen2veh);
+			accel_sen_loc_veh = rotate2(projectFromSen3ToSen(event.values), psi_sen2veh);
 			break;
 		case Sensor.TYPE_GYROSCOPE:
 			gyro_sen_loc_sen3 = event.values;
 			break;
 		case Sensor.TYPE_MAGNETIC_FIELD:
 			// Project mag readings onto ground plane
-			mag_sen_loc_veh = rotate2(projectOnGroundPlane(event.values), psi_sen2veh);
+			mag_sen_loc_veh = rotate2(projectFromSen3ToSen(event.values), psi_sen2veh);
 			// Determine new psi_loc2sen, see Honeywell AN203, "Compass Heading using Magnetometers"
 			psi_loc2veh = (float) Math.atan2(mag_sen_loc_veh[0], mag_sen_loc_veh[1]);
 			// Update Dpsi_loc2veh and DDpsi_loc2veh
@@ -269,7 +276,7 @@ public class RaceLog extends Activity implements SensorEventListener, LocationLi
 			accel_veh_loc_veh[1] = accel_sen_loc_veh[1] + DDpsi_loc2veh * r_sen_veh_veh[0]
 				- Dpsi_loc2veh * Dpsi_loc2veh * r_sen_veh_veh[1];
 
-			// Switch expression from vehicle frame to local frame (rotate through -psi_loc2veh)
+			// Switch expression from vehicle frame to local frame
 			accel_veh_loc_loc = rotate2(accel_veh_loc_veh, -psi_loc2veh);
 
 			// Update velocity
