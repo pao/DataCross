@@ -3,6 +3,9 @@ package com.greentaperacing.racelog;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,9 +20,37 @@ import android.widget.TextView;
 
 public class RaceLog extends Activity implements SensorEventListener, LocationListener {
 	private static final int GPS_FORCE_UPDATE_RATE = 1000;
+	public static final String CALIBRATION_PREFS = "calibration";
 	private final Handler h = new Handler();
 	private SensorManager sm;
 	private LocationManager lm;
+
+	private static final String DATABASE_NAME = "calibration.db";
+	private static final int DATABASE_VERSION = 0;
+	public static final String CAL_TABLE_NAME = "calibration";
+	public static final String KEY_CALNAME = "name";
+	public static final String KEY_CALDATA = "data";
+
+	public static class DBHelper extends SQLiteOpenHelper {
+
+		private static final String CALIBRATION_TABLE_CREATE = "CREATE TABLE " + CAL_TABLE_NAME
+			+ " (" + KEY_CALNAME + " TEXT, " + KEY_CALDATA + " BLOB);";
+
+		public DBHelper(
+			final Context context) {
+			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		}
+
+		@Override
+		public void onCreate(final SQLiteDatabase db) {
+			db.execSQL(CALIBRATION_TABLE_CREATE);
+		}
+
+		@Override
+		public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
+		}
+
+	}
 
 	// variableCamelCase_of_wrt_expressedIn
 	// veh == vehicle
@@ -52,11 +83,10 @@ public class RaceLog extends Activity implements SensorEventListener, LocationLi
 	private final float psi_sen2veh = 0.0F;
 
 	// Calibration normal to the ground plane - get by sitting still for a bit
-	private float[] gpNormal_sen_veh_sen3 = { 0.0F, 0.0F, 0.0F };
-
+	private final float[] gpNormal_sen_veh_sen3 = { 0.0F, 0.0F, 0.0F };
 	// Arbitrary ground plane vectors; will be set in computeGroundPlane
-	private float[] gpX_sen3 = { 1.0F, 0.0F, 0.0F };
-	private float[] gpY_sen3 = { 0.0F, 1.0F, 0.0F };
+	private final float[] gpX_sen3 = { 1.0F, 0.0F, 0.0F };
+	private final float[] gpY_sen3 = { 0.0F, 1.0F, 0.0F };
 
 	double[] gps_lla = { Float.NaN, Float.NaN, Float.NaN };
 
@@ -91,64 +121,10 @@ public class RaceLog extends Activity implements SensorEventListener, LocationLi
 		h.removeCallbacks(periodicStateUpdate);
 	}
 
-	private void calibrateGpNormalVector() {
-
-	}
-
-	private double dot(final float[] u, final float[] v) {
-		double accum = 0;
-		for (int i = 0; i < u.length; i++) {
-			accum = accum + u[i] * v[i];
-		}
-		return accum;
-	}
-
-	private float[] normalize(final float[] vec) {
-		final double vec_mag = Math.sqrt(dot(vec, vec));
-		for (int i = 0; i < vec.length; i++) {
-			vec[i] = (float) (vec[i] / vec_mag);
-		}
-		return vec;
-	}
-
-	private float[] proj_axis(final int axis, final float[] u) {
-		final double sf = u[axis] / dot(u, u);
-		for (int i = 0; i < u.length; i++) {
-			u[i] = (float) (u[i] * sf);
-		}
-		return u;
-	}
-
-	private float[] rotate2(final float[] v, final float theta) {
-		final float[] w = { Float.NaN, Float.NaN };
-		w[0] = (float) (Math.cos(theta) * v[0] - Math.sin(theta) * v[1]);
-		w[1] = (float) (Math.sin(theta) * v[0] + Math.cos(theta) * v[1]);
-		return w;
-	}
-
-	private void computeGroundPlane() {
-		// Normalize gpNormal
-		gpNormal_sen_veh_sen3 = normalize(gpNormal_sen_veh_sen3);
-
-		// Perform Gram-Schmidt process
-		final float[] prjX = proj_axis(0, gpNormal_sen_veh_sen3);
-		gpX_sen3[0] = 1 - prjX[0];
-		gpX_sen3[1] = 0 - prjX[1];
-		gpX_sen3[2] = 0 - prjX[2];
-		gpX_sen3 = normalize(gpX_sen3);
-
-		final float[] prjY1 = proj_axis(1, gpNormal_sen_veh_sen3);
-		final float[] prjY2 = proj_axis(1, gpX_sen3);
-		gpY_sen3[0] = 0 - prjY1[0] - prjY2[0];
-		gpY_sen3[1] = 1 - prjY1[1] - prjY2[1];
-		gpY_sen3[2] = 0 - prjY2[1] - prjY2[2];
-		gpY_sen3 = normalize(gpY_sen3);
-	}
-
 	private float[] projectFromSen3ToSen(final float[] v) {
 		final float[] w = { Float.NaN, Float.NaN };
-		w[0] = (float) dot(v, gpX_sen3);
-		w[1] = (float) dot(v, gpY_sen3);
+		w[0] = (float) VectorFun.dot(v, gpX_sen3);
+		w[1] = (float) VectorFun.dot(v, gpY_sen3);
 		return w;
 	}
 
@@ -238,14 +214,14 @@ public class RaceLog extends Activity implements SensorEventListener, LocationLi
 		// Dispatch the field update
 		switch (event.sensor.getType()) {
 		case Sensor.TYPE_ACCELEROMETER:
-			accel_sen_loc_veh = rotate2(projectFromSen3ToSen(event.values), psi_sen2veh);
+			accel_sen_loc_veh = VectorFun.rotate2(projectFromSen3ToSen(event.values), psi_sen2veh);
 			break;
 		case Sensor.TYPE_GYROSCOPE:
 			gyro_sen_loc_sen3 = event.values;
 			break;
 		case Sensor.TYPE_MAGNETIC_FIELD:
 			// Project mag readings onto ground plane
-			mag_sen_loc_veh = rotate2(projectFromSen3ToSen(event.values), psi_sen2veh);
+			mag_sen_loc_veh = VectorFun.rotate2(projectFromSen3ToSen(event.values), psi_sen2veh);
 			// Determine new psi_loc2sen, see Honeywell AN203, "Compass Heading using Magnetometers"
 			psi_loc2veh = (float) Math.atan2(mag_sen_loc_veh[0], mag_sen_loc_veh[1]);
 			// Update Dpsi_loc2veh and DDpsi_loc2veh
@@ -277,7 +253,7 @@ public class RaceLog extends Activity implements SensorEventListener, LocationLi
 				- Dpsi_loc2veh * Dpsi_loc2veh * r_sen_veh_veh[1];
 
 			// Switch expression from vehicle frame to local frame
-			accel_veh_loc_loc = rotate2(accel_veh_loc_veh, -psi_loc2veh);
+			accel_veh_loc_loc = VectorFun.rotate2(accel_veh_loc_veh, -psi_loc2veh);
 
 			// Update velocity
 			cbeVelocity_veh_loc_loc[0] = (float) (cbeVelocity_veh_loc_loc[0] + accel_veh_loc_loc[0]
