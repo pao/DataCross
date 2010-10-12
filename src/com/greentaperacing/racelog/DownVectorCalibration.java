@@ -2,7 +2,6 @@ package com.greentaperacing.racelog;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -81,8 +80,6 @@ public class DownVectorCalibration extends Activity implements SensorEventListen
 				editor.putFloat("gpY_sen3/1", gpY_sen3[1]);
 				editor.putFloat("gpY_sen3/2", gpY_sen3[2]);
 				editor.commit();
-
-				final SQLiteDatabase caldb = new RaceLog.DBHelper(this).getWritableDatabase();
 
 				finish();
 			}

@@ -5,17 +5,8 @@
     android:layout_height="fill_parent"
     >
 
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/accX"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/accY"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/accZ"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/gyrL"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/gyrM"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/gyrN"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/magX"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/magY"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/magZ"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/nmea"></TextView>
-<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/lat"></TextView>
-<TextView android:text="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/lon"></TextView>
-<TextView android:text="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/alt"></TextView>
+
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/DownVectorCalibration" android:text="@string/cal_down_start" android:onClick="startDownVectorCalibration"></Button>
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/HeadingCalibration" android:text="@string/cal_heading_start" android:onClick="startHeadingCalibration"></Button>
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TrackTrajectory" android:text="@string/tracking_start" android:onClick="startTrackTrajectory"></Button>
 </LinearLayout>

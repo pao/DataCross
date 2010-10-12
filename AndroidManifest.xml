@@ -11,7 +11,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".DownVectorCalibration"
+                  android:label="@string/app_name">
+        <intent-filter><action android:name="com.greentaperacing.racelog.DOWN_VECTOR_CALIBRATION"></action>
+</intent-filter>
+</activity>
+        <activity android:name=".HeadingCalibration"
+                  android:label="@string/app_name">
+        <intent-filter><action android:name="com.greentaperacing.racelog.HEADING_CALIBRATION"></action>
+</intent-filter>
+</activity>
+        <activity android:name=".TrackTrajectory"
+                  android:label="@string/app_name">
+        <intent-filter><action android:name="com.greentaperacing.racelog.TRACK_TRAJECTORY"></action>
+</intent-filter>
+</activity>
     </application>
     <uses-sdk android:minSdkVersion="6" />
 
