@@ -7,10 +7,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.widget.TextView;
 
 public class DownVectorCalibration extends Activity implements SensorEventListener {
 
-	private static final double STDEV_LIMIT = 0.01; // m/s/s
+	private static final double STDEV_LIMIT = 0.05; // m/s/s
 
 	float[] accel_accum = { 0.0F, 0.0F, 0.0F };
 	float[] accum_sq = { 0.0F, 0.0F, 0.0F };
@@ -22,7 +23,7 @@ public class DownVectorCalibration extends Activity implements SensorEventListen
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.track_trajectory);
 		sm = (SensorManager) getSystemService(SENSOR_SERVICE);
 		sm.registerListener(this, sm.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0),
 			SensorManager.SENSOR_DELAY_FASTEST);
@@ -43,7 +44,10 @@ public class DownVectorCalibration extends Activity implements SensorEventListen
 				sn[i] = Math.sqrt(accum_sq[i] / nsamples
 					- (accel_accum[i] * accel_accum[i] / nsamples / nsamples));
 			}
-			if (sn[0] < STDEV_LIMIT && sn[1] < STDEV_LIMIT && sn[2] < STDEV_LIMIT) {
+			((TextView) findViewById(R.id.lat)).setText("sn0:" + Double.toString(sn[0]));
+			((TextView) findViewById(R.id.lon)).setText("sn1:" + Double.toString(sn[1]));
+			((TextView) findViewById(R.id.alt)).setText("sn2:" + Double.toString(sn[2]));
+			if (nsamples > 100 && sn[0] < STDEV_LIMIT && sn[1] < STDEV_LIMIT && sn[2] < STDEV_LIMIT) {
 				float[] gpX_sen3 = { 0.0F, 0.0F, 0.0F };
 				float[] gpY_sen3 = { 0.0F, 0.0F, 0.0F };
 

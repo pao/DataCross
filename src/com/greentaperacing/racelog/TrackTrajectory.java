@@ -38,10 +38,10 @@ public class TrackTrajectory extends Activity implements SensorEventListener, Lo
 
 	private float[] gyro_sen_loc_sen3 = { Float.NaN, Float.NaN, Float.NaN };
 
-	private float[] accel_sen_loc_veh;
-	private float[] accel_veh_loc_loc;
-	private float[] accel_veh_loc_veh;
-	private float[] mag_sen_loc_veh;
+	private float[] accel_sen_loc_veh = { Float.NaN, Float.NaN };
+	private float[] accel_veh_loc_loc = { Float.NaN, Float.NaN };
+	private final float[] accel_veh_loc_veh = { Float.NaN, Float.NaN };
+	private float[] mag_sen_loc_veh = { Float.NaN, Float.NaN };
 	private final double[] cbeVelocity_veh_loc_loc = { Double.NaN, Double.NaN };
 
 	/*
@@ -61,9 +61,9 @@ public class TrackTrajectory extends Activity implements SensorEventListener, Lo
 
 	double[] gps_lla = { Float.NaN, Float.NaN, Float.NaN };
 
-	private float psi_loc2veh;
-	private float Dpsi_loc2veh;
-	private float DDpsi_loc2veh;
+	private float psi_loc2veh = 0.0F;
+	private final float Dpsi_loc2veh = 0.0F;
+	private final float DDpsi_loc2veh = 0.0F;
 
 	float[] accvel = { Float.NaN, Float.NaN, Float.NaN };
 
@@ -86,7 +86,8 @@ public class TrackTrajectory extends Activity implements SensorEventListener, Lo
 		gpY_sen3[1] = sp.getFloat("gpY_sen3/1", Float.NaN);
 		gpY_sen3[2] = sp.getFloat("gpY_sen3/2", Float.NaN);
 
-		psi_sen2veh = sp.getFloat("psi_sen2veh", Float.NaN);
+		// TODO 0.0F is not a good default; once cal in place use Float.NaN
+		psi_sen2veh = sp.getFloat("psi_sen2veh", 0.0F);
 
 		propagateState();
 	}
