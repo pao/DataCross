@@ -9,7 +9,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
-public class UpVectorCalibration extends Activity implements SensorEventListener {
+public class DownVectorCalibration extends Activity implements SensorEventListener {
 
 	private static final double STDEV_LIMIT = 0.01; // m/s/s
 
