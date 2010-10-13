@@ -10,19 +10,21 @@ public class VectorFun {
 	}
 
 	public static float[] normalize(final float[] vec) {
+		final float[] vout = { Float.NaN, Float.NaN, Float.NaN };
 		final double vec_mag = Math.sqrt(dot(vec, vec));
 		for (int i = 0; i < vec.length; i++) {
-			vec[i] = (float) (vec[i] / vec_mag);
+			vout[i] = (float) (vec[i] / vec_mag);
 		}
-		return vec;
+		return vout;
 	}
 
 	public static float[] proj_axis(final int axis, final float[] u) {
+		final float[] vout = { Float.NaN, Float.NaN, Float.NaN };
 		final double sf = u[axis] / dot(u, u);
 		for (int i = 0; i < u.length; i++) {
-			u[i] = (float) (u[i] * sf);
+			vout[i] = (float) (u[i] * sf);
 		}
-		return u;
+		return vout;
 	}
 
 	public static float[] rotate2(final float[] v, final float theta) {

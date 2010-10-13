@@ -92,6 +92,14 @@ public class TrackTrajectory extends Activity implements SensorEventListener, Lo
 		propagateState();
 	}
 
+	@Override
+	protected void onDestroy() {
+		h.removeCallbacks(periodicStateUpdate);
+		sm.unregisterListener(this);
+		lm.removeUpdates(this);
+		super.onDestroy();
+	}
+
 	private void propagateState() {
 		sm.registerListener(this, sm.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0),
 			SensorManager.SENSOR_DELAY_FASTEST);

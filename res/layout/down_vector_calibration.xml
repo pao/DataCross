@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+<TextView android:text="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/sn0"></TextView>
+<TextView android:text="@+id/TextView04" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/sn1"></TextView><TextView android:text="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/sn2"></TextView><TextView android:text="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/accX"></TextView>
+
+
+<TextView android:text="@+id/TextView05" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/accY"></TextView>
+<TextView android:text="@+id/TextView06" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/accZ"></TextView>
+</LinearLayout>
