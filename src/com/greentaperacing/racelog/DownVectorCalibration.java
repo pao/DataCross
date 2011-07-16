@@ -8,6 +8,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.widget.TextView;
+import com.greentaperacing.datacross.R;
 
 public class DownVectorCalibration extends Activity implements SensorEventListener {
 

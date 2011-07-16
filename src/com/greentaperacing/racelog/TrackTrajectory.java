@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
+import com.greentaperacing.datacross.R;
 
 public class TrackTrajectory extends Activity implements SensorEventListener, LocationListener {
 

@@ -1,5 +1,7 @@
 package com.greentaperacing.racelog;
 
+import com.greentaperacing.datacross.R;
+
 public class VectorFun {
 	public static double dot(final float[] u, final float[] v) {
 		double accum = 0;

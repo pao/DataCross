@@ -1,5 +1,7 @@
 package com.greentaperacing.racelog;
 
+import com.greentaperacing.datacross.R;
+
 /**
  * An interface describing a data backend:
  * Native sensors

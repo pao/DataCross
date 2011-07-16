@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import com.greentaperacing.datacross.R;
 
 public class HeadingCalibration extends Activity implements SensorEventListener, LocationListener {
 
