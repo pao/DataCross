@@ -86,7 +86,7 @@ public class DownVectorCalibration extends Activity implements SensorEventListen
 				gpY_sen3[2] = 0 - prjY2[1] - prjY2[2];
 				gpY_sen3 = VectorFun.normalize(gpY_sen3);
 
-				final SharedPreferences sp = getSharedPreferences(RaceLog.CALIBRATION_PREFS, 0);
+				final SharedPreferences sp = getSharedPreferences(DataCross.CALIBRATION_PREFS, 0);
 				final SharedPreferences.Editor editor = sp.edit();
 				editor.putFloat("gpNormal_sen_veh_sen3/0", accel_accum[0]);
 				editor.putFloat("gpNormal_sen_veh_sen3/1", accel_accum[1]);

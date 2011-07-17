@@ -3,6 +3,5 @@
     <string name="tracking_start">Track!</string>
     <string name="cal_heading_start">Calibration Step 2</string>
     <string name="cal_down_start">Calibration Step 1</string>
-    <string name="hello">Hello World, RaceLog!</string>
-    <string name="app_name">RaceLog</string>
+    <string name="app_name">DataCross</string>
 </resources>

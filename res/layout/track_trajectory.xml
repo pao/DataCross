@@ -10,4 +10,5 @@
 
 <TextView android:text="@+id/TextView05" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/accX"></TextView>
 <TextView android:text="@+id/TextView06" android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/accY"></TextView>
+<include layout="@layout/trajectory_map" android:id="@+id/traj_map_ref"  android:layout_width="fill_parent" android:layout_height="fill_parent"/>
 </LinearLayout>

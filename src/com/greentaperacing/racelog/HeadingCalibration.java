@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+
 import com.greentaperacing.datacross.R;
 
 public class HeadingCalibration extends Activity implements SensorEventListener, LocationListener {
@@ -20,7 +21,7 @@ public class HeadingCalibration extends Activity implements SensorEventListener,
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.heading_calibration);
 		sm = (SensorManager) getSystemService(SENSOR_SERVICE);
 		sm.registerListener(this, sm.getSensorList(Sensor.TYPE_MAGNETIC_FIELD).get(0),
 			SensorManager.SENSOR_DELAY_FASTEST);
@@ -28,6 +29,13 @@ public class HeadingCalibration extends Activity implements SensorEventListener,
 		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, Float.MIN_VALUE, this);
 
+	}
+
+	@Override
+	protected void onDestroy() {
+		sm.unregisterListener(this);
+		lm.removeUpdates(this);
+		super.onDestroy();
 	}
 
 	@Override

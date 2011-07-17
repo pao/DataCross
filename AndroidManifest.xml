@@ -3,8 +3,9 @@
       package="com.greentaperacing.datacross"
       android:versionCode="1"
       android:versionName="1.0">
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name="com.greentaperacing.racelog.RaceLog"
+        <activity android:name="com.greentaperacing.racelog.DataCross"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +30,7 @@
 <category android:name="android.intent.category.DEFAULT"></category>
 </intent-filter>
 </activity>
+        <uses-library android:name="com.google.android.maps" android:required="true"></uses-library>
     </application>
     <uses-sdk android:minSdkVersion="8" />
 

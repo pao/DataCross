@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import com.greentaperacing.datacross.R;
 
-public class RaceLog extends Activity {
+public class DataCross extends Activity {
 	public static final String CALIBRATION_PREFS = "calibration";
 
 	/** Called when the activity is first created. */

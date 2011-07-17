@@ -1,9 +1,13 @@
 package com.greentaperacing.racelog;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,14 +19,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
+
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.Projection;
 import com.greentaperacing.datacross.R;
 
-public class TrackTrajectory extends Activity implements SensorEventListener, LocationListener {
+public class TrackTrajectory extends MapActivity implements SensorEventListener, LocationListener {
 
 	private static final int GPS_FORCE_UPDATE_RATE = 1000;
 	private final Handler h = new Handler();
 	private SensorManager sm;
 	private LocationManager lm;
+	private final TrajectoryOverlay traj = new TrajectoryOverlay();
 
 	// variableCamelCase_of_wrt_expressedIn
 	// veh == vehicle
@@ -76,7 +87,7 @@ public class TrackTrajectory extends Activity implements SensorEventListener, Lo
 		sm = (SensorManager) getSystemService(SENSOR_SERVICE);
 		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-		final SharedPreferences sp = getSharedPreferences(RaceLog.CALIBRATION_PREFS, 0);
+		final SharedPreferences sp = getSharedPreferences(DataCross.CALIBRATION_PREFS, 0);
 		gpNormal_sen_veh_sen3[0] = sp.getFloat("gpNormal_sen_veh_sen3/0", Float.NaN);
 		gpNormal_sen_veh_sen3[1] = sp.getFloat("gpNormal_sen_veh_sen3/1", Float.NaN);
 		gpNormal_sen_veh_sen3[2] = sp.getFloat("gpNormal_sen_veh_sen3/2", Float.NaN);
@@ -89,6 +100,10 @@ public class TrackTrajectory extends Activity implements SensorEventListener, Lo
 
 		// TODO 0.0F is not a good default; once cal in place use Float.NaN
 		psi_sen2veh = sp.getFloat("psi_sen2veh", 0.0F);
+
+		final MapView map = ((MapView) findViewById(R.id.traj_map));
+		map.setSatellite(true);
+		map.getOverlays().add(traj);
 
 		propagateState();
 	}
@@ -172,12 +187,18 @@ public class TrackTrajectory extends Activity implements SensorEventListener, Lo
 		gps_lla[1] = last_fix.getLongitude();
 		gps_lla[2] = last_fix.getAltitude();
 		final float speed = last_fix.getSpeed();
-		Log.d("RaceLog", "Speed: " + Float.toString(speed));
+		Log.d("DataCross", "Speed: " + Float.toString(speed));
 		final double bearing_loc = last_fix.getBearing() * Math.PI / 180;
 		acctime = System.nanoTime();
 		cbeVelocity_veh_loc_loc[0] = speed * Math.sin(bearing_loc); // North component
 		cbeVelocity_veh_loc_loc[1] = speed * Math.cos(bearing_loc); // East component
 		// location.getTime();
+		final GeoPoint pt = new GeoPoint((int) (last_fix.getLatitude() * 1e6),
+			(int) (last_fix.getLongitude() * 1e6));
+		final MapView map = ((MapView) findViewById(R.id.traj_map));
+		traj.addPoint(pt);
+		map.getController().animateTo(pt);
+		map.getController().setZoom(map.getMaxZoomLevel());
 	}
 
 	private final Runnable periodicStateUpdate = new Runnable() {
@@ -260,6 +281,48 @@ public class TrackTrajectory extends Activity implements SensorEventListener, Lo
 				+ Double.toString(cbeVelocity_veh_loc_loc[0]));
 			((TextView) findViewById(R.id.accY)).setText("velY:"
 				+ Double.toString(cbeVelocity_veh_loc_loc[1]));
+		}
+	}
+
+	@Override
+	protected boolean isRouteDisplayed() {
+		return true;
+	}
+
+	@Override
+	protected boolean isLocationDisplayed() {
+		return true;
+	}
+
+	class TrajectoryOverlay extends Overlay {
+		private final ArrayList<GeoPoint> pts = new ArrayList<GeoPoint>();
+		private Point pt = null; // will be allocated by first toPixels call
+		private Paint trj_paint = null;
+
+		public TrajectoryOverlay() {
+			super();
+			trj_paint = new Paint();
+			trj_paint.setDither(true);
+			trj_paint.setColor(Color.RED);
+			trj_paint.setStyle(Paint.Style.FILL_AND_STROKE);
+			trj_paint.setStrokeJoin(Paint.Join.ROUND);
+			trj_paint.setStrokeCap(Paint.Cap.ROUND);
+			trj_paint.setStrokeWidth(2);
+
+		}
+
+		@Override
+		public void draw(final Canvas canvas, final MapView mapView, final boolean shadow) {
+			if (pts.size() > 0) {
+				final Projection proj = mapView.getProjection();
+				pt = proj.toPixels(pts.get(pts.size() - 1), pt);
+				canvas.drawCircle(pt.x, pt.y, 3, trj_paint);
+			}
+			super.draw(canvas, mapView, shadow);
+		}
+
+		public void addPoint(final GeoPoint gp) {
+			pts.add(gp);
 		}
 	}
 }
